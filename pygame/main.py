@@ -1,5 +1,6 @@
 import pygame
 import random
+import numpy
 
 class Debug:
     def __init__(self, window_width, window_height, window):
@@ -12,7 +13,8 @@ class Debug:
             2: (0, 0, 255),
             3: (255, 255, 0),
             4: (0, 255, 255), 
-            5: (255, 0, 255)
+            5: (255, 0, 255), 
+            -1: (0, 0, 0)
         }
 
     def draw_circle(self, x, y, radius, color):
@@ -81,12 +83,13 @@ class Game:
                 else:
                     if len(clicked_pos) > 3:
                         if (self.is_selection_removable(self.analyze_mouse_movement(clicked_pos))):
+                            self.field.generate_on_columns(self.analyze_mouse_movement(clicked_pos))
                             print('success')    
                         else:
                             print('succ')
                     clicked_pos = []
 
-            if self.is_ui_updated or self.is_field_updated:
+            if True:
                 self.draw_all("game") # optimize draw_all feature
                 pygame.display.update()
                 self.is_ui_updated = self.is_field_updated = False
@@ -127,8 +130,9 @@ class Game:
             have the same cell color.
         """
         print(coordinates)
+        if len(coordinates) < 3:
+            return False
         main_color = self.field.field[coordinates[0][0]][coordinates[0][1]]
-        print(main_color)
         for i in coordinates:
             if self.field.field[i[0]][i[1]] != main_color:
                 return False
@@ -161,15 +165,26 @@ class Field:
         print(*self.field, sep="\n")
 
 
-    def generate_on_column(self, columns):
+    def generate_on_columns(self, columns):
         """
-            generate_on_column(self, column)
-            Generates a new gem on place of the removed one.
+            generate_on_columns(self, column)
+            Generates a new gem on a specified column and moves everything down.
         """
+        to_be_removed = [[0, 0]] * 10  # list that contains number of removed gems per column
         for i in columns:
-            for j in i:
-                pass
-
+            self.field[i[0]][i[1]] = -1
+        flipped_field = numpy.rot90(self.field).tolist()
+        print(*flipped_field, sep='\n')
+        for i in range(len(flipped_field) - 1, 0, -1):
+            to_be_removed[i][0] = flipped_field[i].count(-1)
+            if -1 in flipped_field[i]:
+                to_be_removed[i][1] = flipped_field[i].index(-1)
+            print('1', to_be_removed[i])
+        for i in range(len(flipped_field)):
+            if to_be_removed[i][0] != 0:
+                for j in range(to_be_removed[i][0] - 1):
+                    flipped_field[i][j + 1] = flipped_field[i][j]
+        print(*flipped_field, sep='\n')
 
     def is_move_available(self, field):
         """
@@ -237,4 +252,4 @@ def main():
     pygame.quit()
 
 if __name__ == "__main__":
-    main()  
+    main()
