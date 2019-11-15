@@ -1,11 +1,6 @@
 import pygame
 import random
 
-class Physics:
-    def __init__(self):
-        pass
-
-
 class Debug:
     def __init__(self, window_width, window_height, window):
         self.window = window
@@ -90,7 +85,6 @@ class Game:
                         else:
                             print('succ')
                     clicked_pos = []
-
 
             if self.is_ui_updated or self.is_field_updated:
                 self.draw_all("game") # optimize draw_all feature
