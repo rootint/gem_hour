@@ -7,4 +7,4 @@ a[6] = -1
 a[7] = -1
 print(a)
 for i in range(len(a)):
-    
+    pass
