@@ -21,11 +21,12 @@ class Debug:
         pygame.draw.circle(self.window, color, (x, y), radius // 2 - 2)
 
     def draw_field(self, field, radius):
+        # print(*field, sep='\n1s')
         for i in range(len(field)):
             for j in range(len(field[i])):
-                self.draw_circle(self.window_width // 6 + int(radius * (i + 0.5)), 
-                                 self.window_height // 6 + int(radius * (j + 0.5)), 
-                                 radius, self.colors[field[i][j]])
+                self.draw_circle(self.window_width // 6 + int(radius * (j + 0.5)), 
+                                 self.window_height // 6 + int(radius * (i + 0.5)), 
+                                 radius, self.colors[field[j][i]])
 
 
     def draw_net(self, width, height, cell_size):
@@ -91,7 +92,7 @@ class Game:
 
             if True:
                 self.draw_all("game") # optimize draw_all feature
-                pygame.display.update()
+                pygame.display.flip()
                 self.is_ui_updated = self.is_field_updated = False
             if not self.field.is_move_available(self.field.field):
                 self.dead = True
@@ -162,7 +163,6 @@ class Field:
         self.field = [[random.randint(0, 5) for j in range(width)] for i in range(height)]
         while not self.is_move_available(self.field):
             self.field = [[random.randint(0, 5) for j in range(width)] for i in range(height)]
-        print(*self.field, sep="\n")
 
 
     def generate_on_columns(self, columns):
@@ -173,17 +173,23 @@ class Field:
         to_be_removed = [[0, 0]] * 10  # list that contains number of removed gems per column
         for i in columns:
             self.field[i[0]][i[1]] = -1
-        flipped_field = numpy.rot90(self.field).tolist()
-        print(*flipped_field, sep='\n')
+        # flipped_field = numpy.rot90(self.field).tolist()
+        flipped_field = self.field
         for i in range(len(flipped_field) - 1, 0, -1):
             to_be_removed[i][0] = flipped_field[i].count(-1)
             if -1 in flipped_field[i]:
                 to_be_removed[i][1] = flipped_field[i].index(-1)
-            print('1', to_be_removed[i])
+        print('1', *to_be_removed[i])
         for i in range(len(flipped_field)):
             if to_be_removed[i][0] != 0:
                 for j in range(to_be_removed[i][0] - 1):
                     flipped_field[i][j + 1] = flipped_field[i][j]
+        for i in range(len(flipped_field)):
+            if -1 in flipped_field[i]:
+                j = 0
+                while flipped_field[i][j] != -1:
+                    flipped_field[]
+                    j += 1
         print(*flipped_field, sep='\n')
 
     def is_move_available(self, field):
