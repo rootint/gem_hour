@@ -2,7 +2,7 @@ import random
 
 a = [random.randint(0, 5) for i in range(10)]
 print(a)
-a[3] = -1
+a[0] = -1
 print(a)
 amount = a.count(-1)
 for i in range(len(a)):
