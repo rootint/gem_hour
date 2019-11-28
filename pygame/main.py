@@ -2,30 +2,33 @@ import pygame
 import random
 # import numpy
 
-class Debug:
+class Painter:
     def __init__(self, window_width, window_height, window):
         self.window = window
         self.window_height = window_height
         self.window_width = window_width
         self.colors = {
-            0: (255, 0, 0),
-            1: (0, 255, 0),
-            2: (0, 0, 255),
-            3: (255, 255, 0),
-            4: (0, 255, 255), 
-            5: (255, 0, 255), 
-            -1: (0, 0, 0)
+            0: "textures/green.png",
+            1: "textures/red.png",
+            2: "textures/blue.png",
+            3: "textures/purple.png",
+            4: "textures/yellow.png",
+            5: "textures/white.png",
+            -1: "textures/darkblue.png"
         }
 
-    def draw_circle(self, x, y, radius, color):
-        pygame.draw.circle(self.window, color, (x, y), radius // 2 - 2)
+    def draw_gem(self, x, y, radius, color):
+        img = pygame.image.load(color)
+        img = pygame.transform.scale(img, (radius, radius - 5))
+        self.window.blit(img, (x, y + 2))
+        # pygame.draw.circle(self.window, color, (x, y), radius // 2 - 2)
 
     def draw_field(self, field, radius):
         # print(*field, sep='\n1s')
         for i in range(len(field)):
             for j in range(len(field[i])):
-                self.draw_circle(self.window_width // 6 + int(radius * (j + 0.5)), 
-                                 self.window_height // 6 + int(radius * (i + 0.5)), 
+                self.draw_gem(5 + radius * j, 
+                                 60 + radius * i, 
                                  radius, self.colors[field[j][i]])
 
 
@@ -41,13 +44,41 @@ class Debug:
                              (i * cell_size + self.window_width // 6, 
                               height * cell_size + self.window_height // 6))
 
+    def animate_drop(self, coords, status):
+        """
+            animate_drop(self, x, y, status)
+            Animates gems dropping out of the screen.
+        """
+        pass
+
+    def animate_appearance(self, coords, status):
+        """
+            animate_appearance(self, x, y, status)
+            Animates new gems appearing from above.
+        """
+        pass
+
+    def draw_main_menu(self):
+        """
+            draw_main_menu(self)
+            Draws the main menu interface if the user is in main menu.
+        """
+        pass
+
+    def draw_game_ui(self, score, time=None, moves=None):
+        """
+            draw_game_ui(self, score, time=None, moves=None)
+            Draws the game UI while in-game.
+        """
+        pygame.draw.rect(self.window, (94, 94, 94), 
+                         (0, 0, self.window_width, 60))
+
 
 class Game:
     def __init__(self, window_width, window_height):
         self.window = pygame.display.set_mode((window_width, window_height))
         self.field = Field(10, 10, window_width, window_height, self.window)
-        self.ui = UI(window_width, window_height, self.window)
-        self.debug = Debug(window_width, window_height, self.window)
+        self.painter = Painter(window_width, window_height, self.window)
         self.dead = False
         self.is_ui_updated = True
         self.is_field_updated = True
@@ -85,6 +116,7 @@ class Game:
                     if len(clicked_pos) > 3:
                         if (self.is_selection_removable(self.analyze_mouse_movement(clicked_pos))):
                             self.field.generate_on_columns(self.analyze_mouse_movement(clicked_pos))
+                            self.painter.animate_drop(self.analyze_mouse_movement(clicked_pos), 0)
                             print('success')    
                         else:
                             print('succ')
@@ -105,23 +137,23 @@ class Game:
             whether it's a main menu or a game level.
         """
         if status == "game":
-            self.ui.draw_game_ui(10)
+            self.painter.draw_game_ui(10)
             self.field.draw_all()
-            self.debug.draw_net(10, 10, 30)
-            self.debug.draw_field(self.field.field, 30)
+            # self.painter.draw_net(10, 10, self.field.cell_size)
+            self.painter.draw_field(self.field.field, self.field.cell_size)
 
     def analyze_mouse_movement(self, position_list):
         """
             analyze_mouse_movement(self, position_list): list
             Converts coordinates of mouse movement into cell coordinates and returns it.
         """
-        top_y = 83 # fix it!
-        top_x = 83
+        top_y = 60 # fix it!
+        top_x = 5
         coordinates = set()
         for i in position_list:
             x = i[0] - top_x
             y = i[1] - top_y
-            coordinates.add((x // 30, y // 30))
+            coordinates.add((x // self.field.cell_size, y // self.field.cell_size))
         return list(coordinates)
 
     def is_selection_removable(self, coordinates):
@@ -148,6 +180,7 @@ class Field:
         self.window_height = window_height
         self.window = window
         self.field = [[0] * width for i in range(height)]
+        self.cell_size = 55
 
     def generate_field(self, width, height):
         """
@@ -210,33 +243,11 @@ class Field:
             draw_all(self)
             Draws all the visible field.
         """
-        pygame.draw.rect(self.window, (94, 94, 94), 
-                         (self.window_width // 6, self.window_height // 6,
-                          self.window_width - 2 * self.window_width // 6, 
-                          self.window_height - 2 * self.window_width // 6))
+        # pygame.draw.rect(self.window, (94, 94, 94), 
+        #                  (self.window_width // 6, self.window_height // 6,
+        #                   self.window_width - 2 * self.window_width // 6, 
+        #                   self.window_height - 2 * self.window_width // 6))
         self.draw_cells()
-
-
-class UI:
-    def __init__(self, window_width, window_height, window):
-        self.window_width = window_width
-        self.window_height = window_height
-        self.window = window
-
-    def draw_main_menu(self):
-        """
-            draw_main_menu(self)
-            Draws the main menu interface if the user is in main menu.
-        """
-        pass
-
-    def draw_game_ui(self, score, time=None, moves=None):
-        """
-            draw_game_ui(self, score, time=None, moves=None)
-            Draws the game UI while in-game.
-        """
-        pygame.draw.rect(self.window, (94, 94, 94), 
-                         (0, 0, self.window_width, self.window_height // 7))
 
 
 def main():
@@ -244,7 +255,7 @@ def main():
         main()
         Called on a program start, launches the game itself.
     """
-    game = Game(500, 500)
+    game = Game(560, 610)
     game.launch()
     pygame.quit()
 
