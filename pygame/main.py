@@ -1,6 +1,6 @@
 import pygame
 import random
-import numpy
+# import numpy
 
 class Debug:
     def __init__(self, window_width, window_height, window):
@@ -70,7 +70,7 @@ class Game:
         """
         clicked_pos = []
         while not self.dead:
-            pygame.time.delay(10)
+            pygame.time.delay(1)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.dead = True
@@ -170,27 +170,18 @@ class Field:
             generate_on_columns(self, column)
             Generates a new gem on a specified column and moves everything down.
         """
-        to_be_removed = [[0, 0]] * 10  # list that contains number of removed gems per column
         for i in columns:
             self.field[i[0]][i[1]] = -1
-        # flipped_field = numpy.rot90(self.field).tolist()
-        flipped_field = self.field
-        for i in range(len(flipped_field) - 1, 0, -1):
-            to_be_removed[i][0] = flipped_field[i].count(-1)
-            if -1 in flipped_field[i]:
-                to_be_removed[i][1] = flipped_field[i].index(-1)
-        print('1', *to_be_removed[i])
-        for i in range(len(flipped_field)):
-            if to_be_removed[i][0] != 0:
-                for j in range(to_be_removed[i][0] - 1):
-                    flipped_field[i][j + 1] = flipped_field[i][j]
-        for i in range(len(flipped_field)):
-            if -1 in flipped_field[i]:
-                j = 0
-                while flipped_field[i][j] != -1:
-                    flipped_field[]
-                    j += 1
-        print(*flipped_field, sep='\n')
+        for i in range(len(self.field)):
+            if -1 in self.field[i]:
+                amount = self.field[i].count(-1)
+                for j in range(len(self.field[i])):
+                    if self.field[i][j] == -1:
+                        for k in range(j, -1, -1):
+                            self.field[i][k] = self.field[i][k - 1] 
+                        for k in range(amount - 2):
+                            self.field[i][k] = random.randint(0, 5)
+        print(*self.field, sep='\n')
 
     def is_move_available(self, field):
         """
