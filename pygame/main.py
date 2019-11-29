@@ -1,12 +1,16 @@
+# Made by RandoM, 2019
 import pygame
 import random
+import math
 # import numpy
 
 class Painter:
-    def __init__(self, window_width, window_height, window):
+    def __init__(self, window_width, window_height, window, field, cell_size):
         self.window = window
         self.window_height = window_height
         self.window_width = window_width
+        self.cell_size = cell_size
+        self.field = field
         self.colors = {
             0: "textures/green.png",
             1: "textures/red.png",
@@ -49,6 +53,10 @@ class Painter:
             animate_drop(self, x, y, status)
             Animates gems dropping out of the screen.
         """
+        for i in coords:
+            print(self.field[i[0]][i[1]])
+            self.draw_gem(i[0] * self.cell_size, i[1] * self.cell_size + 50 + status, 
+                          self.cell_size, self.colors[self.field[i[0]][i[1]]])
         pass
 
     def animate_appearance(self, coords, status):
@@ -78,10 +86,11 @@ class Game:
     def __init__(self, window_width, window_height):
         self.window = pygame.display.set_mode((window_width, window_height))
         self.field = Field(10, 10, window_width, window_height, self.window)
-        self.painter = Painter(window_width, window_height, self.window)
         self.dead = False
         self.is_ui_updated = True
         self.is_field_updated = True
+        self.window_width = window_width
+        self.window_height = window_height
         pygame.display.set_caption("Gem Hour")
 
     def launch(self):
@@ -92,6 +101,8 @@ class Game:
         """
         self.field.generate_field(10, 10)
         self.window.fill((47, 47, 47))
+        self.painter = Painter(self.window_width, self.window_height, 
+                               self.window, self.field.field, self.field.cell_size)
         self.tick()
 
     def tick(self):
@@ -99,9 +110,16 @@ class Game:
             tick(self)
             Contains the main game loop.
         """
+        fall_velocity = 1.5 # velocity of falling gems
         clicked_pos = []
+        is_dropping = False # boolean that checks if anything is falling out of the field
+        dropping_gems = [] # a list of gems to be dropped
+        drop_y = 0 # calculates coordinates of dropping gems
+        drop_time = 0
+        fps = 500
+        clock = pygame.time.Clock()
         while not self.dead:
-            pygame.time.delay(1)
+            clock.tick(fps)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.dead = True
@@ -115,19 +133,26 @@ class Game:
                 else:
                     if len(clicked_pos) > 3:
                         if (self.is_selection_removable(self.analyze_mouse_movement(clicked_pos))):
+                            dropping_gems = self.analyze_mouse_movement(clicked_pos)
                             self.field.generate_on_columns(self.analyze_mouse_movement(clicked_pos))
-                            self.painter.animate_drop(self.analyze_mouse_movement(clicked_pos), 0)
-                            print('success')    
-                        else:
-                            print('succ')
+                            self.painter.animate_appearance(self.analyze_mouse_movement(clicked_pos), 0)
+                            is_dropping = True  
                     clicked_pos = []
-
             if True:
                 self.draw_all("game") # optimize draw_all feature
                 pygame.display.flip()
                 self.is_ui_updated = self.is_field_updated = False
             if not self.field.is_move_available(self.field.field):
                 self.dead = True
+            if drop_y > self.window_height + 100:
+                drop_y = 0
+                drop_time = 0
+                is_dropping = False
+                dropping_gems = []
+            else:
+                self.painter.animate_drop(dropping_gems, drop_y)
+                drop_y = 5 * drop_time ** 2
+                drop_time += 1
 
     def draw_all(self, status):
         """
