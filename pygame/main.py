@@ -91,6 +91,7 @@ class Game:
         self.is_field_updated = True
         self.window_width = window_width
         self.window_height = window_height
+        self.score = 0
         pygame.display.set_caption("Gem Hour")
 
     def launch(self):
@@ -144,15 +145,15 @@ class Game:
                 self.is_ui_updated = self.is_field_updated = False
             if not self.field.is_move_available(self.field.field):
                 self.dead = True
-            if drop_y > self.window_height + 100:
-                drop_y = 0
-                drop_time = 0
-                is_dropping = False
-                dropping_gems = []
-            else:
-                self.painter.animate_drop(dropping_gems, drop_y)
-                drop_y = 5 * drop_time ** 2
-                drop_time += 1
+            # if drop_y > self.window_height + 100:
+            #     drop_y = 0
+            #     drop_time = 0
+            #     is_dropping = False
+            #     dropping_gems = []
+            # else:
+            #     self.painter.animate_drop(dropping_gems, drop_y)
+            #     drop_y = 5 * drop_time ** 2
+            #     drop_time += 1
 
     def draw_all(self, status):
         """
