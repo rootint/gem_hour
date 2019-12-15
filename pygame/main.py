@@ -5,12 +5,14 @@ import math
 # import numpy
 
 class Painter:
-    def __init__(self, window_width, window_height, window, field, cell_size):
+    def __init__(self, window_width, window_height, window, field, cell_size, score):
         self.window = window
         self.window_height = window_height
         self.window_width = window_width
         self.cell_size = cell_size
         self.field = field
+        self.score = score
+        self.font = pygame.font.Font("ARCADE.TTF", 50)
         self.colors = {
             0: "textures/green.png",
             1: "textures/red.png",
@@ -80,6 +82,8 @@ class Painter:
         """
         pygame.draw.rect(self.window, (94, 94, 94), 
                          (0, 0, self.window_width, 60))
+        score_text = self.font.render(str(score), 1, (255, 255, 255))
+        self.window.blit(score_text, (15, 12)) 
 
 
 class Game:
@@ -103,7 +107,7 @@ class Game:
         self.field.generate_field(10, 10)
         self.window.fill((47, 47, 47))
         self.painter = Painter(self.window_width, self.window_height, 
-                               self.window, self.field.field, self.field.cell_size)
+                               self.window, self.field.field, self.field.cell_size, self.score)
         self.tick()
 
     def tick(self):
@@ -138,6 +142,7 @@ class Game:
                             self.field.generate_on_columns(self.analyze_mouse_movement(clicked_pos))
                             self.painter.animate_appearance(self.analyze_mouse_movement(clicked_pos), 0)
                             is_dropping = True  
+                            self.score += len(dropping_gems) * 20
                     clicked_pos = []
             if True:
                 self.draw_all("game") # optimize draw_all feature
@@ -163,7 +168,7 @@ class Game:
             whether it's a main menu or a game level.
         """
         if status == "game":
-            self.painter.draw_game_ui(10)
+            self.painter.draw_game_ui(self.score)
             self.field.draw_all()
             # self.painter.draw_net(10, 10, self.field.cell_size)
             self.painter.draw_field(self.field.field, self.field.cell_size)
@@ -281,6 +286,7 @@ def main():
         main()
         Called on a program start, launches the game itself.
     """
+    pygame.init()
     game = Game(560, 610)
     game.launch()
     pygame.quit()
