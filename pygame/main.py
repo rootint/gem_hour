@@ -83,7 +83,9 @@ class Painter:
         pygame.draw.rect(self.window, (94, 94, 94), 
                          (0, 0, self.window_width, 60))
         score_text = self.font.render(str(score), 1, (255, 255, 255))
+        time_text = self.font.render(str(int(time)), 1, (255, 255, 255))
         self.window.blit(score_text, (15, 12)) 
+        self.window.blit(time_text, (200, 12))
 
 
 class Game:
@@ -96,6 +98,7 @@ class Game:
         self.window_width = window_width
         self.window_height = window_height
         self.score = 0
+        self.time_elapsed = 0
         pygame.display.set_caption("Gem Hour")
 
     def launch(self):
@@ -150,6 +153,8 @@ class Game:
                 self.is_ui_updated = self.is_field_updated = False
             if not self.field.is_move_available(self.field.field):
                 self.dead = True
+            self.time_elapsed += 1 / 4
+            print(self.time_elapsed)
             # if drop_y > self.window_height + 100:
             #     drop_y = 0
             #     drop_time = 0
@@ -168,7 +173,7 @@ class Game:
             whether it's a main menu or a game level.
         """
         if status == "game":
-            self.painter.draw_game_ui(self.score)
+            self.painter.draw_game_ui(self.score, self.time_elapsed)
             self.field.draw_all()
             # self.painter.draw_net(10, 10, self.field.cell_size)
             self.painter.draw_field(self.field.field, self.field.cell_size)
