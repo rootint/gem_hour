@@ -41,7 +41,7 @@ class Game:
         dropping_gems = [] # a list of gems to be dropped
         drop_y = 0 # calculates coordinates of dropping gems
         drop_time = 0
-        fps = 500
+        fps = 10
         clock = pygame.time.Clock()
         while not self.dead:
             clock.tick(fps)
@@ -55,7 +55,7 @@ class Game:
             if True:  # register mouse movement only on the field itself
                 if mouse[0] == 1:
                     clicked_pos.append(pygame.mouse.get_pos())
-                    self.emitter.create_particles(pygame.mouse.get_pos())
+                    # self.emitter.create_particles(pygame.mouse.get_pos())
                 else:
                     if len(clicked_pos) > 3:
                         if (self.is_selection_removable(self.analyze_mouse_movement(clicked_pos))):
@@ -72,7 +72,8 @@ class Game:
             if not self.field.is_move_available(self.field.field):
                 self.dead = True
             self.time_elapsed += 1 / 4
-            print(self.time_elapsed)
+            # print(self.time_elapsed)
+            pygame.display.set_caption('FPS ' + str(clock.get_fps()))
             # if drop_y > self.window_height + 100:
             #     drop_y = 0
             #     drop_time = 0
@@ -94,7 +95,8 @@ class Game:
             self.painter.draw_game_ui(self.score, self.time_elapsed)
             self.field.draw_all()
             # self.painter.draw_net(10, 10, self.field.cell_size)
-            self.painter.draw_field(self.field.field, self.field.cell_size)
+            # self.painter.draw_field(self.field.field, self.field.cell_size)
+            self.field.all_sprites.draw(self.window)
 
     def analyze_mouse_movement(self, position_list):
         """
@@ -116,7 +118,7 @@ class Game:
             Returns a boolean value which tells whether all the coordinates
             have the same cell color.
         """
-        print(coordinates)
+        # print(coordinates)
         if len(coordinates) < 3:
             return False
         main_color = self.field.field[coordinates[0][0]][coordinates[0][1]]

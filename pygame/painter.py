@@ -82,4 +82,4 @@ class Painter:
         score_text = self.font.render(str(score), 1, (255, 255, 255))
         time_text = self.font.render(str(int(time)), 1, (255, 255, 255))
         self.window.blit(score_text, (15, 12)) 
-        self.window.blit(time_text, (200, 12))
+        # self.window.blit(time_text, (200, 12))

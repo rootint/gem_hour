@@ -10,6 +10,26 @@ class Field:
         self.window = window
         self.field = [[0] * width for i in range(height)]
         self.cell_size = 55
+        self.all_sprites = pygame.sprite.Group()
+        self.colors = {
+            0: "textures/green.png",
+            1: "textures/red.png",
+            2: "textures/blue.png",
+            3: "textures/purple.png",
+            4: "textures/yellow.png",
+            5: "textures/white.png",
+            -1: "textures/darkblue.png"
+        }
+
+    def load_image(self, fullname, colorkey=None):    
+        image = pygame.image.load(fullname).convert_alpha()
+        # if colorkey is not None:
+        #     if colorkey == -1:
+        #         colorkey = image.get_at((0, 0))
+        #     image.set_colorkey(colorkey)
+        # else:
+        #     image = image.convert_alpha()
+        return image
 
     def generate_field(self, width, height):
         """
@@ -25,7 +45,14 @@ class Field:
         self.field = [[random.randint(0, 5) for j in range(width)] for i in range(height)]
         while not self.is_move_available(self.field):
             self.field = [[random.randint(0, 5) for j in range(width)] for i in range(height)]
-
+        for i in range(len(self.field)):
+            for j in range(len(self.field[i])):
+                gem = pygame.sprite.Sprite(self.all_sprites)
+                gem.image = self.load_image(self.colors[self.field[i][j]])
+                gem.image = pygame.transform.scale(gem.image, (self.cell_size, self.cell_size))
+                gem.rect = gem.image.get_rect()
+                gem.rect.x = i * 55 + 5
+                gem.rect.y = j * 55 + 60
 
     def generate_on_columns(self, columns):
         """
