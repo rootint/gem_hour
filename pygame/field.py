@@ -49,7 +49,7 @@ class Field:
             for j in range(len(self.field[i])):
                 gem = pygame.sprite.Sprite(self.all_sprites)
                 gem.image = self.load_image(self.colors[self.field[i][j]])
-                gem.image = pygame.transform.scale(gem.image, (self.cell_size, self.cell_size))
+                gem.image = pygame.transform.scale(gem.image, (self.cell_size, self.cell_size - 5))
                 gem.rect = gem.image.get_rect()
                 gem.rect.x = i * 55 + 5
                 gem.rect.y = j * 55 + 60
@@ -70,14 +70,40 @@ class Field:
                             self.field[i][k] = self.field[i][k - 1] 
                         for k in range(amount - 2):
                             self.field[i][k] = random.randint(0, 5)
-        print(*self.field, sep='\n')
+        # print(*self.field, sep='\n')
+        self.all_sprites = pygame.sprite.Group()
+        for i in range(len(self.field)):
+            for j in range(len(self.field[i])):
+                gem = pygame.sprite.Sprite(self.all_sprites)
+                gem.image = self.load_image(self.colors[self.field[i][j]])
+                gem.image = pygame.transform.scale(gem.image, (self.cell_size, self.cell_size - 5))
+                gem.rect = gem.image.get_rect()
+                gem.rect.x = i * 55 + 5
+                gem.rect.y = j * 55 + 60
 
     def is_move_available(self, field):
         """
             is_move_available(self, field): boolean
             Checks if any moves are possible on the field.
         """
-        return True
+        for i in range(1, len(field) - 1):
+            for j in range(1, len(field[i]) - 1):
+                a = []
+                b = []
+                a.append(field[i - 1][j - 1])
+                a.append(field[i - 1][j])
+                a.append(field[i - 1][j + 1])
+                a.append(field[i][j - 1])
+                a.append(field[i][j])                
+                a.append(field[i][j + 1])
+                a.append(field[i + 1][j - 1])
+                a.append(field[i + 1][j])
+                a.append(field[i + 1][j + 1])
+                for _ in a:
+                    b.append(a.count(_))
+                if max(b) >= 3:
+                    return True
+        return False
 
     def draw_cells(self):
         """

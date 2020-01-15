@@ -77,8 +77,8 @@ class Painter:
             draw_game_ui(self, score, time=None, moves=None)
             Draws the game UI while in-game.
         """
-        pygame.draw.rect(self.window, (94, 94, 94), 
-                         (0, 0, self.window_width, 60))
+        # pygame.draw.rect(self.window, (94, 94, 94), 
+        #                 (0, 0, self.window_width, 60))
         score_text = self.font.render(str(score), 1, (255, 255, 255))
         time_text = self.font.render(str(int(time)), 1, (255, 255, 255))
         self.window.blit(score_text, (15, 12)) 
