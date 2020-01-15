@@ -167,6 +167,7 @@ class Game:
         for i in coordinates:
             if self.field.field[i[0]][i[1]] != main_color:
                 return False
+                # return True
         return True
 
     def on_game_end(self):

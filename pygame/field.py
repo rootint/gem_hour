@@ -59,6 +59,7 @@ class Field:
             generate_on_columns(self, column)
             Generates a new gem on a specified column and moves everything down.
         """
+        print(columns)
         for i in columns:
             self.field[i[0]][i[1]] = -1
         for i in range(len(self.field)):
