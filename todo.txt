@@ -1,0 +1,4 @@
+rewrite everything using sprite groups?
+falling animation
+main menu
+texture update + write score beautifully
