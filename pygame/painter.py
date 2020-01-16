@@ -58,6 +58,18 @@ class Painter:
                           self.cell_size, self.colors[self.field[i[0]][i[1]]])
         pass
 
+    def highlight_gems(self, coords):
+        """
+            highlight_gems(self, coords)
+            Highlights the selected gems by placing semi-transparent bubbles on top.
+        """ 
+        surface = pygame.Surface((self.window_width, self.window_height), pygame.SRCALPHA, 32)
+        for i in coords:
+            x, y = i[0] + self.cell_size // 2, i[1] + self.cell_size // 2
+
+            pygame.draw.circle(surface, (0, 0, 0, 64), (x, y), self.cell_size // 2)
+        return surface
+
     def animate_appearance(self, coords, status):
         """
             animate_appearance(self, x, y, status)

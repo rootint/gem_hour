@@ -34,13 +34,7 @@ class Field:
     def generate_field(self, width, height):
         """
             generate_field(self, width, height)
-            Generates a 2 dimension list of types of gems:
-            0 - Square;
-            1 - Hexagon;
-            2 - Triangle;
-            3 - Diamond;
-            4 - Octagon;
-            5 - Pentagon.
+            Generates a 2 dimension list of types of gems.
         """
         self.field = [[random.randint(0, 5) for j in range(width)] for i in range(height)]
         while not self.is_move_available(self.field):
@@ -69,7 +63,7 @@ class Field:
                     if self.field[i][j] == -1:
                         for k in range(j, -1, -1):
                             self.field[i][k] = self.field[i][k - 1] 
-                        for k in range(amount - 2):
+                        for k in range(amount):
                             self.field[i][k] = random.randint(0, 5)
         # print(*self.field, sep='\n')
         self.all_sprites = pygame.sprite.Group()

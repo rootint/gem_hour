@@ -18,6 +18,7 @@ class Game:
         pygame.display.set_caption("Gem Hour")
         from emitter import Emitter
         self.emitter = Emitter()
+        self.bubble_surface = pygame.Surface((window_width, window_height), pygame.SRCALPHA, 32)
 
     def start_screen(self):
         start = False
@@ -92,22 +93,26 @@ class Game:
             if keys[pygame.K_q] or keys[pygame.K_ESCAPE]:
                 self.on_game_end()
                 self.dead = True
-            if True:  # register mouse movement only on the field itself
+            if pygame.mouse.get_pos()[1] in range(60, self.window_height):
                 if mouse[0] == 1:
                     clicked_pos.append(pygame.mouse.get_pos())
                     self.emitter.create_particles(pygame.mouse.get_pos())
+                    selection = self.analyze_mouse_movement(clicked_pos)
+                    self.bubble_surface = self.painter.highlight_gems(self.get_removed_coordinates(selection))
                 else:
                     if len(clicked_pos) > 3:
-                        if (self.is_selection_removable(self.analyze_mouse_movement(clicked_pos))):
-                            dropping_gems = self.analyze_mouse_movement(clicked_pos)
-                            self.field.generate_on_columns(self.analyze_mouse_movement(clicked_pos))
-                            self.painter.animate_appearance(self.analyze_mouse_movement(clicked_pos), 0)
+                        self.bubble_surface = self.painter.highlight_gems([])
+                        if self.is_selection_removable(selection):
+                            dropping_gems = selection
+                            self.field.generate_on_columns(selection)
+                            self.painter.animate_appearance(selection, 0)
                             is_dropping = True  
                             self.score += len(dropping_gems) * 20
                     clicked_pos = []
             if True:
                 self.window.blit(self.background_image, [0, 0])
                 self.draw_all("game") # optimize draw_all feature
+                self.window.blit(self.bubble_surface, [0, 0])
                 pygame.display.flip()
                 self.is_ui_updated = self.is_field_updated = False
             if not self.field.is_move_available(self.field.field):
@@ -153,6 +158,17 @@ class Game:
             y = i[1] - top_y
             coordinates.add((x // self.field.cell_size, y // self.field.cell_size))
         return list(coordinates)
+
+    def get_removed_coordinates(self, coords):
+        """
+           get_removed_coordinates(self, coords): list
+           Returns a list with the top-left coordinates of each selected gem. 
+        """
+        coordinates = []
+        for i in coords:
+            x, y = i[0], i[1]
+            coordinates.append((5 + x * self.field.cell_size, 60 + y * self.field.cell_size))
+        return coordinates
 
     def is_selection_removable(self, coordinates):
         """
